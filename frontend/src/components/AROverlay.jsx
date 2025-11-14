@@ -1,19 +1,53 @@
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 /**
- * Simple earring component using Three.js primitives.
- * Creates a golden hoop earring for testing.
+ * 3D Model Earring component - loads GLTF/GLB files
  */
-function SimpleEarring({ position, rotation, scale = 1 }) {
+function ModelEarring({ modelPath, position, rotation, scale = 1 }) {
+  const { scene } = useGLTF(modelPath);
+
+  // Clone the scene to allow multiple instances
+  const clonedScene = scene.clone();
+
+  // Traverse and set up materials for better rendering
+  useEffect(() => {
+    clonedScene.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        // Ensure materials are properly set up for metallic jewelry
+        if (child.material) {
+          child.material.needsUpdate = true;
+        }
+      }
+    });
+  }, [clonedScene]);
+
+  return (
+    <primitive
+      object={clonedScene}
+      position={position}
+      rotation={rotation}
+      scale={scale}
+    />
+  );
+}
+
+/**
+ * Fallback earring using procedural geometry (when no model is available)
+ */
+function ProceduralEarring({ position, rotation, scale = 1, color = '#FFD700' }) {
   return (
     <group position={position} rotation={rotation}>
       {/* Main hoop */}
       <mesh>
         <torusGeometry args={[0.015 * scale, 0.003 * scale, 16, 32]} />
         <meshStandardMaterial
-          color="#FFD700"
+          color={color}
           metalness={0.9}
           roughness={0.1}
           envMapIntensity={1}
@@ -36,13 +70,54 @@ function SimpleEarring({ position, rotation, scale = 1 }) {
 }
 
 /**
- * AROverlay component renders 3D jewelry overlays using Three.js.
+ * Loading fallback component
  */
-function AROverlay({ landmarks, videoSize }) {
+function LoadingEarring({ position }) {
+  return (
+    <mesh position={position}>
+      <sphereGeometry args={[0.01, 8, 8]} />
+      <meshBasicMaterial color="#888888" wireframe />
+    </mesh>
+  );
+}
+
+/**
+ * Earring wrapper that handles both 3D models and procedural fallback
+ */
+function Earring({ modelPath, position, rotation, scale, color, useFallback }) {
+  if (useFallback || !modelPath) {
+    return (
+      <ProceduralEarring
+        position={position}
+        rotation={rotation}
+        scale={scale}
+        color={color}
+      />
+    );
+  }
+
+  return (
+    <Suspense fallback={<LoadingEarring position={position} />}>
+      <ModelEarring
+        modelPath={modelPath}
+        position={position}
+        rotation={rotation}
+        scale={scale}
+      />
+    </Suspense>
+  );
+}
+
+/**
+ * AROverlay component renders 3D jewelry overlays using Three.js.
+ * Supports both GLTF/GLB 3D models and procedural fallback geometry.
+ */
+function AROverlay({ landmarks, videoSize, selectedJewelry }) {
   const [leftEarPos, setLeftEarPos] = useState([0, 0, -5]);
   const [rightEarPos, setRightEarPos] = useState([0, 0, -5]);
   const [faceRotation, setFaceRotation] = useState([0, 0, 0]);
   const [isVisible, setIsVisible] = useState(false);
+  const [modelError, setModelError] = useState(false);
 
   useEffect(() => {
     if (!landmarks || !landmarks.left_ear || !landmarks.right_ear) {
@@ -79,6 +154,12 @@ function AROverlay({ landmarks, videoSize }) {
     }
   }, [landmarks, videoSize]);
 
+  // Get jewelry properties
+  const modelPath = selectedJewelry?.modelPath;
+  const jewelryScale = selectedJewelry?.scale || 1.5;
+  const jewelryColor = selectedJewelry?.color || '#FFD700';
+  const useFallback = !modelPath || modelError;
+
   return (
     <Canvas
       camera={{
@@ -95,6 +176,10 @@ function AROverlay({ landmarks, videoSize }) {
         height: '100%',
         pointerEvents: 'none',
         zIndex: 1,
+      }}
+      onError={(error) => {
+        console.error('Canvas error:', error);
+        setModelError(true);
       }}
     >
       {/* Lighting setup for realistic metallic appearance */}
@@ -113,30 +198,45 @@ function AROverlay({ landmarks, videoSize }) {
       {isVisible && (
         <>
           {/* Left earring */}
-          <SimpleEarring
+          <Earring
+            modelPath={modelPath}
             position={leftEarPos}
             rotation={[
               faceRotation[0] * 0.5,
               faceRotation[1] * 0.5,
               faceRotation[2],
             ]}
-            scale={1.5}
+            scale={jewelryScale}
+            color={jewelryColor}
+            useFallback={useFallback}
           />
 
           {/* Right earring - mirrored */}
-          <SimpleEarring
+          <Earring
+            modelPath={modelPath}
             position={rightEarPos}
             rotation={[
               faceRotation[0] * 0.5,
               Math.PI + faceRotation[1] * 0.5,
               -faceRotation[2],
             ]}
-            scale={1.5}
+            scale={jewelryScale}
+            color={jewelryColor}
+            useFallback={useFallback}
           />
         </>
       )}
     </Canvas>
   );
+}
+
+// Preload models for better performance (optional)
+export function preloadModels(modelPaths) {
+  modelPaths.forEach((path) => {
+    if (path) {
+      useGLTF.preload(path);
+    }
+  });
 }
 
 export default AROverlay;

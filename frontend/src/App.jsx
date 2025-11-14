@@ -87,7 +87,7 @@ function App() {
       <VideoFeed onVideoReady={handleVideoReady} />
 
       {/* AR Overlay (Three.js layer) */}
-      <AROverlay landmarks={landmarks} videoSize={videoSize} />
+      <AROverlay landmarks={landmarks} videoSize={videoSize} selectedJewelry={selectedJewelry} />
 
       {/* Status overlay (top-left) */}
       <div

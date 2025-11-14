@@ -5,10 +5,38 @@ import { useState } from 'react';
  */
 function JewelrySelector({ onSelect, currentSelection }) {
   const jewelry = [
-    { id: 1, name: 'Gold Hoops', type: 'earrings', color: '#FFD700' },
-    { id: 2, name: 'Silver Studs', type: 'earrings', color: '#C0C0C0' },
-    { id: 3, name: 'Rose Gold', type: 'earrings', color: '#B76E79' },
-    { id: 4, name: 'Diamond', type: 'earrings', color: '#E0E0E0' },
+    {
+      id: 1,
+      name: 'Gold Hoops',
+      type: 'earrings',
+      color: '#FFD700',
+      modelPath: '/models/gold-hoop-earring.glb', // Add your 3D model file here
+      scale: 1.5,
+    },
+    {
+      id: 2,
+      name: 'Silver Studs',
+      type: 'earrings',
+      color: '#C0C0C0',
+      modelPath: '/models/silver-stud-earring.glb', // Add your 3D model file here
+      scale: 1.2,
+    },
+    {
+      id: 3,
+      name: 'Rose Gold',
+      type: 'earrings',
+      color: '#B76E79',
+      modelPath: '/models/rose-gold-earring.glb', // Add your 3D model file here
+      scale: 1.5,
+    },
+    {
+      id: 4,
+      name: 'Diamond',
+      type: 'earrings',
+      color: '#E0E0E0',
+      modelPath: '/models/diamond-earring.glb', // Add your 3D model file here
+      scale: 1.3,
+    },
   ];
 
   return (

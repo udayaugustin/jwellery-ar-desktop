@@ -10,10 +10,12 @@ A real-time augmented reality mirror application for virtually trying on jewelry
 
 - **Real-time Face Tracking**: Uses MediaPipe Face Mesh for accurate facial landmark detection
 - **3D AR Overlay**: Renders realistic jewelry using Three.js with metallic materials
+- **GLTF/GLB Model Support**: Load your own 3D jewelry models for photorealistic rendering
 - **Multiple Jewelry Styles**: Switch between different earring designs in real-time
 - **Photo Capture**: Take high-resolution snapshots of try-on looks
 - **Low Latency**: Optimized for 30+ FPS performance
 - **Privacy-First**: All processing done locally, no data uploaded
+- **Automatic Fallback**: Works with procedural geometry if no 3D models are available
 
 ## Architecture
 
@@ -124,6 +126,48 @@ Use the jewelry selector at the bottom of the screen to switch between different
 - **Rose Gold**: Trendy rose gold earrings
 - **Diamond**: Sparkling diamond earrings
 
+### Adding Your Own 3D Jewelry Models
+
+The application supports **GLTF/GLB 3D models** for photorealistic jewelry rendering.
+
+**Quick Start:**
+
+1. **Place your 3D model files** in `frontend/public/models/`
+   ```
+   frontend/public/models/
+   ├── gold-hoop-earring.glb
+   ├── silver-stud-earring.glb
+   └── your-custom-earring.glb
+   ```
+
+2. **Update jewelry selector** in `frontend/src/components/JewelrySelector.jsx`:
+   ```javascript
+   {
+     id: 5,
+     name: 'My Custom Earring',
+     modelPath: '/models/your-custom-earring.glb',
+     scale: 1.5,  // Adjust size as needed
+     color: '#FFD700'
+   }
+   ```
+
+3. **Restart the frontend** and test!
+
+**Where to get 3D models:**
+- **Create in Blender** (free): https://www.blender.org/
+- **Download free models**: Sketchfab, TurboSquid, CGTrader
+- **Commission custom models**: Fiverr, Upwork ($20-200 per model)
+
+**Model requirements:**
+- Format: GLB or GLTF
+- File size: < 5MB
+- Polygon count: < 50k triangles
+- Materials: PBR (Metallic/Roughness)
+
+📚 **Detailed guide**: See `frontend/public/models/README.md` for complete instructions, tutorials, and troubleshooting.
+
+**No models?** The app automatically falls back to procedural 3D geometry (simple shapes) if no models are available.
+
 ### Capturing Photos
 
 1. Position yourself as desired
@@ -190,23 +234,23 @@ jwellery-ar-desktop/
 │   ├── camera_processor.py            # Camera handling
 │   └── landmark_extractor.py          # MediaPipe face tracking
 │
-├── frontend/                          # React frontend
-│   ├── package.json                   # Node dependencies
-│   ├── vite.config.js                 # Vite configuration
-│   ├── index.html                     # HTML entry point
-│   └── src/
-│       ├── main.jsx                   # React entry point
-│       ├── App.jsx                    # Main app component
-│       ├── components/
-│       │   ├── VideoFeed.jsx          # Webcam display
-│       │   ├── AROverlay.jsx          # Three.js 3D rendering
-│       │   ├── JewelrySelector.jsx    # Jewelry picker UI
-│       │   └── SnapshotButton.jsx     # Photo capture
-│       └── services/
-│           └── websocket.js           # WebSocket client
-│
-└── assets/                            # 3D models & assets
-    └── models/                        # Jewelry 3D models
+└── frontend/                          # React frontend
+    ├── package.json                   # Node dependencies
+    ├── vite.config.js                 # Vite configuration
+    ├── index.html                     # HTML entry point
+    ├── public/
+    │   └── models/                    # 3D jewelry models (GLTF/GLB)
+    │       └── README.md              # Model setup guide
+    └── src/
+        ├── main.jsx                   # React entry point
+        ├── App.jsx                    # Main app component
+        ├── components/
+        │   ├── VideoFeed.jsx          # Webcam display
+        │   ├── AROverlay.jsx          # Three.js 3D rendering (supports GLTF)
+        │   ├── JewelrySelector.jsx    # Jewelry picker UI
+        │   └── SnapshotButton.jsx     # Photo capture
+        └── services/
+            └── websocket.js           # WebSocket client
 ```
 
 ## Technical Stack
@@ -321,14 +365,16 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 
 ## Future Enhancements
 
+- [x] Multiple 3D model loading (GLTF/GLB files) ✅ **IMPLEMENTED**
 - [ ] Support for necklaces and rings
-- [ ] Multiple 3D model loading (GLTF/GLB files)
-- [ ] Jewelry catalog with database
+- [ ] Jewelry catalog with database integration
 - [ ] User preferences & saved looks
 - [ ] Social sharing capabilities
-- [ ] Electron packaging for desktop app
+- [ ] Electron packaging for desktop/kiosk app
 - [ ] Multi-language support
 - [ ] Analytics & usage tracking
+- [ ] Virtual try-on for multiple jewelry pieces simultaneously
+- [ ] AI-powered jewelry recommendations
 
 ## Success Metrics
 
