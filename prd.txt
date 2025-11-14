@@ -1,0 +1,97 @@
+Understood! Here’s a **jewelry-focused PRD** tailored for your shop’s AR mirror application using the open-source stack (MediaPipe + OpenCV + Three.js):
+
+***
+
+## **Jewelry AR Mirror – Product Requirements Document (PRD)**
+
+### **Objective**
+Create a premium in-store desktop application that lets customers virtually try on jewelry (earrings, necklaces, piercings, head jewelry, etc.) in real time using face/ear/head tracking and high-quality 3D AR overlays.
+
+***
+
+### **Functional Requirements**
+
+#### **1. Camera Input & Tracking**
+- Capture live video from high-resolution webcam or camera.
+- Detect face, ears, neck, and jawline landmarks using MediaPipe (with ear and head pose estimation).
+- Stable tracking for various angles, skin tones, and face shapes.
+- Robust performance with common jewelry placement (earrings, necklaces, head jewelry, nose rings, etc.).
+
+#### **2. Jewelry AR Overlay**
+- Display virtual 3D jewelry mapped accurately to ears, neck, nose, head, etc.
+- Support photorealistic rendering (lighting, shadows, metallic/glossy textures).
+- Overlay adjusts in real time as customer turns head, tilts, or moves.
+- Enable selection and switching among various jewelry items/styles through UI.
+
+#### **3. User Interface (UI)**
+- Browse jewelry collections by type, style, brand, price, etc.
+- Tap/click to select and preview items.
+- Option to take high-resolution snapshots of try-on looks.
+- Intuitive, “walk-up and use” experience for in-store shoppers.
+
+#### **4. Data Flow & Integration**
+- Python backend (OpenCV + MediaPipe) processes webcam feed and streams landmark/mesh/keypoint data to JS frontend via WebSocket.
+- Three.js frontend overlays chosen jewelry models at detected positions.
+- Modular system for easy addition of new jewelry items.
+
+#### **5. Performance & Reliability**
+- Maintain at least 30 fps for natural, “mirror” feel.
+- Sub-millimeter alignment of models for realism.
+- Error resilience for different hairstyles, glasses, masks.
+
+#### **6. Security & Privacy**
+- All face/video data processed locally; no uploads or analytics unless explicitly enabled.
+- Customer consent required for snapshot export.
+
+***
+
+### **Non-Functional Requirements**
+
+- **Compatibility:** Windows/Mac; can run in browser or Electron desktop mode.
+- **Extensibility:** Easy to add new jewelry types or styles (import 3D models, update catalog).
+- **Maintainability:** Codebase ready for ongoing enhancement; clear documentation.
+
+***
+
+### **Technical Stack**
+
+| Layer         | Technology                     | Notes                         |
+|---------------|-------------------------------|-------------------------------|
+| Hardware      | High-end webcam/camera         | 4K resolution recommended     |
+| Backend       | Python, OpenCV, MediaPipe      | Real-time face/ear/neck tracking |
+| Communication | WebSocket, FastAPI             | Live landmark/mesh streaming  |
+| Frontend      | Three.js, React (optional)     | 3D rendering of jewelry on customer |
+| Packaging     | Electron, Browser              | Kiosk/desktop deployment      |
+
+***
+
+### **User Experience Flow**
+
+1. **Walk Up:** Customer is greeted by live AR mirror display.
+2. **Select Jewelry:** Staff or customer chooses item(s) from UI—earrings, necklaces, headpieces, etc.
+3. **Real-Time Preview:** Chosen jewelry appears overlayed, matches head movements.
+4. **Snapshot (Optional):** Customer can save or print try-on look for reference.
+5. **Switch Styles:** Instantly change among different jewelry for rapid comparison.
+
+***
+
+### **Milestones**
+
+1. **Face & Ear Tracking Prototype with MediaPipe**
+2. **Sample Jewelry Overlay with Three.js**
+3. **UI for Jewelry Catalog & Item Selection**
+4. **Robustness Testing (different users, hairstyles, accessories)**
+5. **Snapshot/Export Feature**
+6. **Final In-Store/Kiosk Packaging**
+
+***
+
+### **Success Criteria**
+- Highly realistic, real-time jewelry fitting for multiple users per day.
+- Customers confidently visualize jewelry as worn.
+- Easy addition of new jewelry styles/models.
+- Satisfied customers and increased conversion rates in-store.
+
+***
+
+Let me know if you’d like **detailed user stories**, technical task breakdown, or architectural diagrams for team onboarding!
